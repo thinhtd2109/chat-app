@@ -9,7 +9,10 @@ import { IAuthDocument, ISignUpData } from '@auth/interfaces/auth.interface';
 import { uploads } from '@global/helpers/cloudinary.upload';
 import _ from 'lodash';
 import HTTP_STATUS from 'http-status-codes';
+import { IUserDocument } from '@user/interfaces/user.interface';
+import UserCache from '@service/redis/user.cache';
 
+const userCache = new UserCache();
 
 class SignUpController {
     @joiValidation(signupSchema)
@@ -30,17 +33,53 @@ class SignUpController {
             password,
             avatarColor
         });
-
         const result = await uploads(avatarImage, _.toString(authObjectId), true, true);
-        if (!result?.public_id) throw new BadRequestError("File upload: Invalid credentials")
+        if (!result?.public_id) throw new BadRequestError("File upload: Invalid credentials");
 
-        // https://res.cloudinary.com/ducthinh2109/image/upload/v1694671882/${_.toString(authObjectId)}.jpg
+        const userData = SignUpController.prototype.userData(authObjectId, userObjectId);
+        userData.profilePicture = `https://res.cloudinary.com/ducthinh2109/image/upload/v${result.version}/${_.toString(authObjectId)}.jpg`
+        await userCache.saveUserToCache(_.toString(userObjectId), _.toString(uId), userData);
+
+
         response.status(HTTP_STATUS.CREATED).send({
             statusCode: HTTP_STATUS.CREATED,
             status: 'success',
             message: 'Đăng ký thành công.'
         })
         // return response.send(await AuthModel.create(request.body))
+    }
+
+    public userData(authId: ObjectId, userObjectId: ObjectId): IUserDocument {
+        return {
+            _id: userObjectId,
+            authId: authId,
+            profilePicture: '',
+            postsCount: 0,
+            followersCount: 0,
+            followingCount: 0,
+            passwordResetToken: '',
+            passwordResetExpires: 0,
+            blocked: [],
+            blockedBy: [],
+            notifications: {
+                messages: false,
+                reactions: false,
+                comments: false,
+                follows: false
+            },
+            social: {
+                facebook: '',
+                instagram: '',
+                twitter: '',
+                youtube: ''
+            },
+            work: '',
+            school: '',
+            location: '',
+            quote: '',
+            bgImageVersion: '',
+            bgImageId: ''
+        } as unknown as IUserDocument;
     }
 
     public signUpData(data: ISignUpData): IAuthDocument {

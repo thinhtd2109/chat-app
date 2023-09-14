@@ -12,7 +12,9 @@ class RedisConnection extends BaseCache {
 
     async connect() {
         try {
-            await this.client.connect();
+            if (!this.client.isOpen) {
+                await this.client.connect();
+            }
             log.info(await this.client.ping());
         } catch (error: any) {
             log.error(error);
