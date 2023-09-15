@@ -17,7 +17,7 @@ export class Helpers {
 
     static signupToken(data: IAuthDocument, userObjectId: string | ObjectId) {
         return JWT.sign({
-            _id: _.toString(userObjectId),
+            userId: _.toString(userObjectId),
             username: data.username,
             email: Helpers.toLowerCase(data.email),
             uId: data.uId,
@@ -25,5 +25,9 @@ export class Helpers {
             avatarColor: data.avatarColor,
             createdAt: data.createdAt
         }, config.JWT_TOKEN)
+    };
+
+    static parseJSON(json: string) {
+        return JSON.parse(json);
     }
 }

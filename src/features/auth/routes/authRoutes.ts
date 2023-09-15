@@ -12,7 +12,7 @@ class AuthRoutes {
 
     public routes() {
         this.router.post('/signup', asyncHandler(signup.create));
-        this.router.post('/signup', asyncHandler(signinController.signIn));
+        this.router.post('/signin', asyncHandler(signinController.signIn));
 
         return this.router;
     }

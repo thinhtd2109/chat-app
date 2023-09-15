@@ -5,7 +5,7 @@ import { IUserDocument } from '@user/interfaces/user.interface';
 declare global {
   namespace Express {
     interface Request {
-      currentUser?: AuthPayload;
+      user?: AuthPayload;
     }
   }
 }

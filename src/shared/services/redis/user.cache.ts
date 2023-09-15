@@ -1,10 +1,10 @@
 import { IUserDocument } from "@user/interfaces/user.interface";
 import { BaseCache } from "./base.cache";
-import moment from 'moment';
 import Logger from "bunyan";
 import { config } from "@root/config";
-import { ServerError } from "@global/helpers/error.handler";
+import { BadRequestError, ServerError } from "@global/helpers/error.handler";
 import _ from 'lodash';
+import { Helpers } from "@global/helpers/helpers";
 
 const log: Logger = config.createLogger('userCache');
 
@@ -14,7 +14,6 @@ class UserCache extends BaseCache {
     }
 
     public async saveUserToCache(key: string, uId: string, createdUser: IUserDocument): Promise<void> {
-        const now = moment();
         const {
             _id,
             authId,
@@ -75,6 +74,26 @@ class UserCache extends BaseCache {
             throw new ServerError('Server error. try again');
         }
 
+    }
+
+    public async getUserFromCache(userId: string): Promise<IUserDocument | null> {
+        try {
+            if (!this.client.isOpen) {
+                await this.client.connect();
+            };
+
+            const response: IUserDocument = await this.client.HGETALL(`user:${userId}`) as unknown as IUserDocument;
+            response.blocked = Helpers.parseJSON(_.toString(response.blocked));
+            response.blockedBy = Helpers.parseJSON(_.toString(response.blockedBy));
+            response.notifications = Helpers.parseJSON(_.toString(response.notifications));
+            response.social = Helpers.parseJSON(_.toString(response.social));
+            response.followersCount = Helpers.parseJSON(_.toString(response.followersCount));
+            response.followingCount = Helpers.parseJSON(_.toString(response.followingCount));
+            console.log(response)
+            return response;
+        } catch (error: any) {
+            throw new BadRequestError(error);
+        }
     }
 }
 
