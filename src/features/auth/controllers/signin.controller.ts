@@ -3,6 +3,7 @@ import { joiValidation } from '@global/decorators/joi-validations.decorator';
 import { BadRequestError } from '@global/helpers/error.handler';
 import { Helpers } from '@global/helpers/helpers';
 import { authService } from '@service/db/auth.service';
+import mailTransport from '@service/emails/mail.transport';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 
@@ -20,12 +21,12 @@ class SignInController {
         const jwt = Helpers.signupToken(userExist, userExist._id);
 
         request.session = { jwt };
-
+        await mailTransport.sendMail('dina69@ethereal.email', 'test', 'test');
         response.status(HTTP_STATUS.OK).send({
             statusCode: HTTP_STATUS.OK,
             status: 'success',
             data: { user: userExist, token: jwt },
-            message: 'Đăng ký thành công.'
+            message: 'Đăng nhập thành công.'
         })
 
     }
