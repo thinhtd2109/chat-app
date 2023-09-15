@@ -11,6 +11,8 @@ import _ from 'lodash';
 import HTTP_STATUS from 'http-status-codes';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import UserCache from '@service/redis/user.cache';
+import { authQueue } from '@service/queues/auth.queue';
+import userQueue from '@service/queues/user.queue';
 
 const userCache = new UserCache();
 
@@ -40,6 +42,8 @@ class SignUpController {
         userData.profilePicture = `https://res.cloudinary.com/ducthinh2109/image/upload/v${result.version}/${_.toString(authObjectId)}.jpg`
         await userCache.saveUserToCache(_.toString(userObjectId), _.toString(uId), userData);
 
+        authQueue.addAuthJob('addAuthUserToDB', { value: authData });
+        userQueue.addUserJob('addUserToDB', { value: userData });
 
         response.status(HTTP_STATUS.CREATED).send({
             statusCode: HTTP_STATUS.CREATED,
