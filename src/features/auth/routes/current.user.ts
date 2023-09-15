@@ -12,10 +12,9 @@ class CurrentUserRoutes {
     };
 
     public routes() {
-        this.router.use(authMiddleware.veriryUser);
+        this.router.use(authMiddleware.verifyUser);
         this.router.use(authMiddleware.checkAuthentication);
         this.router.get('/current-user', asyncHandler(currentController.read));
-
         return this.router;
     }
 }

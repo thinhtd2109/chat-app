@@ -5,7 +5,7 @@ import { AuthorizedError } from '@global/helpers/error.handler';
 import { AuthPayload } from '@auth/interfaces/auth.interface';
 
 class AuthMiddleware {
-    public veriryUser(request: Request, response: Response, next: NextFunction) {
+    public verifyUser(request: Request, response: Response, next: NextFunction) {
         if (!request.session?.jwt) throw new AuthorizedError("Token không hợp lệ.");
 
         try {

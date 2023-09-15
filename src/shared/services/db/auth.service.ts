@@ -19,6 +19,28 @@ class AuthService {
         const user = await AuthModel.findOne(mongoose.sanitizeFilter({ username }));
         return user;
     }
+
+    public async getAuthByEmail(email: string) {
+        const user = await AuthModel.findOne({ email });
+        return user;
+    }
+
+    public async updatePasswordToken(authId: string, token: string, tokenExpiration: number) {
+        const user = await AuthModel.updateOne({ _id: authId }, {
+            passwordResetToken: token,
+            passwordResetExpires: tokenExpiration
+        });
+
+        return user;
+    }
+
+    public async getAuthPasswordByToken(token: string) {
+        const user = await AuthModel.findOne(mongoose.sanitizeFilter({
+            passwordResetToken: token
+        })).gt("passwordResetExpires", Date.now()).exec();
+        return user;
+    }
+
 }
 
 export const authService = new AuthService();  
