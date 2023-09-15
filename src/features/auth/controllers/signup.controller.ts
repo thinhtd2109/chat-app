@@ -106,4 +106,4 @@ class SignUpController {
 
 }
 
-export default new SignUpController();
+export default SignUpController

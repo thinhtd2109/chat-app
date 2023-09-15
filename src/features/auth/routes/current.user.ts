@@ -1,4 +1,3 @@
-
 import currentController from '@auth/controllers/current.controller';
 import authMiddleware from '@global/middlewares/auth.middleware';
 import express, { Router } from 'express';

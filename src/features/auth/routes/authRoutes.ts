@@ -12,7 +12,7 @@ class AuthRoutes {
     };
 
     public routes() {
-        this.router.post('/signup', asyncHandler(signup.create));
+        this.router.post('/signup', asyncHandler(signup.prototype.create));
         this.router.post('/signin', asyncHandler(signinController.signIn));
         this.router.post('/password/create', asyncHandler(password.create));
         this.router.post('/password/reset-password/:token', asyncHandler(password.update))
