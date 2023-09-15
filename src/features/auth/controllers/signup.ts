@@ -21,6 +21,7 @@ class SignUpController {
     public async create(request: Request, response: Response): Promise<any> {
         const { username, email, password, avatarColor, avatarImage } = request.body;
         const authExist = await authService.getUserByUsernameOrEmail(username, email);
+        console.log(authExist)
         if (authExist) throw new BadRequestError(`Thông tin người dùng không hợp lệ.`);
 
         const authObjectId = new ObjectId();

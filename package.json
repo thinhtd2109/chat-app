@@ -15,6 +15,7 @@
     "@bull-board/express": "^5.8.3",
     "@bull-board/ui": "^5.8.3",
     "@socket.io/redis-adapter": "^8.2.1",
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "bull": "^4.11.3",
     "bunyan": "^1.8.15",
@@ -39,6 +40,7 @@
     "typescript-transform-paths": "^3.4.6"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/bcryptjs": "^2.4.3",
     "@types/bunyan": "^1.8.8",
     "@types/compression": "^1.7.3",

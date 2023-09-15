@@ -9,6 +9,11 @@ class AuthService {
         const user: IAuthDocument = await AuthModel.findOne(mongoose.sanitizeFilter(query)).exec() as IAuthDocument;
         return user;
     }
+
+    public async insertAuthUser(data: IAuthDocument) {
+        const newAuth = new AuthModel(data);
+        return await newAuth.save();
+    }
 }
 
 export const authService = new AuthService();  
