@@ -14,6 +14,11 @@ class AuthService {
         const newAuth = new AuthModel(data);
         return await newAuth.save();
     }
+
+    public async getAuthByUsername(username: string) {
+        const user = await AuthModel.findOne(mongoose.sanitizeFilter({ username })).lean();
+        return user;
+    }
 }
 
 export const authService = new AuthService();  

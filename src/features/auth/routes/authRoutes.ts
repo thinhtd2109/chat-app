@@ -1,4 +1,5 @@
-import signup from '@auth/controllers/signup';
+import signinController from '@auth/controllers/signin.controller';
+import signup from '@auth/controllers/signup.controller';
 import express, { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 
@@ -10,7 +11,8 @@ class AuthRoutes {
     };
 
     public routes() {
-        this.router.post('/signup', asyncHandler(signup.create))
+        this.router.post('/signup', asyncHandler(signup.create));
+        this.router.post('/signup', asyncHandler(signinController.signIn));
 
         return this.router;
     }

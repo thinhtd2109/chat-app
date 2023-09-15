@@ -11,6 +11,7 @@ import _ from 'lodash';
 import HTTP_STATUS from 'http-status-codes';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import UserCache from '@service/redis/user.cache';
+import JWT from 'jsonwebtoken';
 import { authQueue } from '@service/queues/auth.queue';
 import userQueue from '@service/queues/user.queue';
 
@@ -21,7 +22,6 @@ class SignUpController {
     public async create(request: Request, response: Response): Promise<any> {
         const { username, email, password, avatarColor, avatarImage } = request.body;
         const authExist = await authService.getUserByUsernameOrEmail(username, email);
-        console.log(authExist)
         if (authExist) throw new BadRequestError(`Thông tin người dùng không hợp lệ.`);
 
         const authObjectId = new ObjectId();
@@ -45,10 +45,13 @@ class SignUpController {
 
         authQueue.addAuthJob('addAuthUserToDB', { value: authData });
         userQueue.addUserJob('addUserToDB', { value: userData });
+        const userJWT = Helpers.signupToken(authData, userObjectId);
+        request.session = { jwt: userJWT };
 
         response.status(HTTP_STATUS.CREATED).send({
             statusCode: HTTP_STATUS.CREATED,
             status: 'success',
+            data: { user: userData, token: userJWT },
             message: 'Đăng ký thành công.'
         })
         // return response.send(await AuthModel.create(request.body))
@@ -98,7 +101,9 @@ class SignUpController {
             avatarColor,
             createdAt: new Date()
         } as IAuthDocument
-    }
+    };
+
+
 }
 
 export default new SignUpController();
