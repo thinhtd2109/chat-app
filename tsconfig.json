@@ -8,7 +8,7 @@
     ],
     "baseUrl": ".",
     "outDir": "./build",
-    "rootDir": "src",
+    "rootDir": ".",
     "strict": true,
     "noImplicitAny": true,
     "noUnusedLocals": false,
@@ -40,6 +40,9 @@
       ],
       "@post/*": [
         "src/features/posts/*"
+      ],
+      "@reaction/*": [
+        "src/features/reactions/*"
       ],
       "@auth/*": [
         "src/features/auth/*"

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./build/app.js",
+    "start": "nodemon ./build/src/app.js | ./node_modules/.bin/bunyan",
     "dev": "nodemon -r tsconfig-paths/register src/app.ts | ./node_modules/.bin/bunyan",
     "build": "ttsc -p .",
     "test": "jest --coverage=true -w=1 --forceExit --detectOpenHandles --watchAll=false"
