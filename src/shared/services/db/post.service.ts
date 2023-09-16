@@ -53,6 +53,24 @@ class PostService {
         return count;
     };
 
+    public async deletePost(postId: string, userId: string) {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        await UserModel.updateOne({
+            _id: userId
+        }, {
+            $inc: {
+                postsCount: -1
+            }
+        }, { session })
+        const result = await PostModel.deleteOne({
+            _id: postId
+        }, { session });
+
+        await session.commitTransaction();
+        return result;
+    }
+
 
 }
 

@@ -5,6 +5,7 @@ import { IPostJobData } from "@post/interfaces/post.interface";
 class UserQueue extends BaseQueue {
     constructor() {
         super('Post');
+        this.processJob('deletePost', 5, postWorker.deletePost);
         this.processJob('addPostToDB', 5, postWorker.savePost);
     }
     public addPostJob(name: string, data: IPostJobData): void {

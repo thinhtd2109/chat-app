@@ -182,6 +182,27 @@ class PostCache extends BaseCache {
         } catch (error) {
             throw new ServerError("Internal Server Error.");
         }
+    };
+
+    public async deletePostFromCache(key: string, userId: string) {
+        try {
+            if (!this.client.isOpen) {
+                await this.client.connect();
+            }
+            const userKey = `users:${userId}`;
+            const postCount: string[] = await this.client.HMGET(userKey, 'postsCount');
+            const transaction = this.client.multi();
+            const count = parseInt(postCount[0], 10) - 1;
+            transaction.DEL(`posts:${key}`);
+            transaction.DEL(`comments:${key}`);
+            transaction.DEL(`reactions:${key}`);
+            transaction.HSET(userKey, ['postsCount', count]);
+            transaction.ZREM('post', key);
+            await transaction.exec();
+
+        } catch (error) {
+            throw new ServerError("Internal Server Error.");
+        }
     }
 }
 
