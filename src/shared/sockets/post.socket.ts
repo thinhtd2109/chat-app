@@ -3,7 +3,7 @@ import Logger from 'bunyan';
 import { Server, Socket } from 'socket.io';
 const log: Logger = config.createLogger('LogPostIO');
 
-let socketIOPostObject: Server;
+export let socketIOPostObject: Server;
 
 export class SocketIOPostHandler {
     private io: Server;

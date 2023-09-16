@@ -11,6 +11,7 @@ let bullAdapter: BullAdapter[] = [];
 
 export let serverAdapter: ExpressAdapter;
 
+
 export abstract class BaseQueue {
     queue: Queue.Queue;
     log: Logger;
