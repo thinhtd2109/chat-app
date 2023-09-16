@@ -7,6 +7,7 @@ class UserQueue extends BaseQueue {
         super('Post');
         this.processJob('deletePost', 5, postWorker.deletePost);
         this.processJob('addPostToDB', 5, postWorker.savePost);
+        this.processJob('updatePost', 5, postWorker.updatePost);
     }
     public addPostJob(name: string, data: IPostJobData): void {
         return this.addJob(name, data);

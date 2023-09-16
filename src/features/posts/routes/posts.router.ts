@@ -2,6 +2,8 @@ import authMiddleware from '@global/middlewares/auth.middleware';
 import { CreatePostController } from '@post/controllers/create.post';
 import deletePostController from '@post/controllers/delete.post';
 import getPost from '@post/controllers/get.post';
+import updatePost from '@post/controllers/update.post';
+import postCache from '@service/redis/post.cache';
 import express, { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 
@@ -21,6 +23,8 @@ class PostRoutes {
         this.router.post('/insert', asyncHandler(CreatePostController.prototype.post));
         this.router.post('/image/insert', asyncHandler(CreatePostController.prototype.postWithImage));
         this.router.delete('/delete/:postId', asyncHandler(deletePostController.deletePost));
+        // this.router.post('/test', asyncHandler(postCache.updatePostInCacheTest));
+        this.router.patch('/update/:postId', asyncHandler(updatePost.updatePost))
         return this.router;
     }
 }

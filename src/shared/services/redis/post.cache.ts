@@ -4,6 +4,8 @@ import { config } from "@root/config";
 import { IPostDocument, ISavePostToCache } from "@post/interfaces/post.interface";
 import _ from 'lodash';
 import { ServerError } from "@global/helpers/error.handler";
+import { Request, Response } from "express";
+import { createClient } from "redis";
 
 const log: Logger = config.createLogger('postCache');
 
@@ -204,6 +206,74 @@ class PostCache extends BaseCache {
             throw new ServerError("Internal Server Error.");
         }
     }
+    public async updatePostInCache(key: string, updatedPost: IPostDocument): Promise<IPostDocument> {
+        const {
+            profilePicture,
+            bgColor,
+            post,
+            gifUrl,
+            feelings,
+            privacy,
+            imgVersion,
+            commentsCount,
+            imgId,
+            reactions } = updatedPost;
+        console.log("updatedPost", updatedPost)
+        const postUpdate: string[] = [
+            'post', _.toString(post),
+            'profilePicture', _.toString(profilePicture),
+            'bgColor', _.toString(bgColor),
+            'gifUrl', _.toString(gifUrl),
+            'feelings', _.toString(feelings),
+            'privacy', _.toString(privacy),
+            'imgVersion', _.toString(imgVersion),
+            'commentsCount', _.toString(commentsCount),
+            'imgId', _.toString(imgId),
+            'reactions', _.toString(reactions)
+        ];
+        try {
+            if (!this.client.isOpen) {
+                await this.client.connect();
+            };
+            await this.client.HSET(`posts:${key}`, postUpdate);
+            const postRedisItem = await this.client.HGETALL(`posts:${key}`) as unknown as IPostDocument;
+            for (let key in updatedPost) {
+                const item = _.get(updatedPost, key);
+                if (item) {
+                    if (typeof item === 'string' || typeof item === 'number') {
+                        _.set(postRedisItem, key, item);
+                    } else {
+                        _.set(postRedisItem, key, JSON.parse(_.toString(item)))
+                    }
+                }
+            }
+            return postRedisItem;
+        } catch (error) {
+            log.error(error)
+            throw new ServerError("Internal Server Error.");
+        }
+    };
+    // public async updatePostInCacheTest(req: Request, res: Response) {
+    //     const { key, updatedPost } = req.body;
+
+    //     try {
+    //         const client = createClient({
+    //             url: config.REDIS_HOST
+    //         })
+    //         if (!client.isOpen) {
+    //             await client.connect();
+    //         };
+    //         console.log(`posts:${key}`)
+    //         const postRedisItem = await client.HGETALL(`posts:${key}`) as unknown as IPostDocument;
+    //         console.log(postRedisItem)
+
+    //         res.send(postRedisItem);
+    //     } catch (error) {
+    //         log.error(error)
+    //         throw new ServerError("Internal Server Error.");
+    //     }
+    // }
 }
+
 
 export default new PostCache();

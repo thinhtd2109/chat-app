@@ -24,6 +24,7 @@ class DeletePostController {
             message: 'Xóa bài đăng thành công.'
         })
     }
+
 }
 
 export default new DeletePostController();

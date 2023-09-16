@@ -71,6 +71,17 @@ class PostService {
         return result;
     }
 
+    public async updatePost(postId: string, updatedPost: IPostDocument) {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        const result = await PostModel.updateOne({
+            _id: postId
+        }, { $set: updatedPost }, { session });
+
+        await session.commitTransaction();
+        return result;
+    }
+
 
 }
 
