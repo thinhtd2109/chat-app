@@ -85,7 +85,7 @@ class PostCache extends BaseCache {
             };
 
             const replies = await transaction.exec();
-            console.log(replies);
+
             const postReplies: IPostDocument[] = [];
 
             for (const post of replies as unknown as IPostDocument[]) {
@@ -97,6 +97,7 @@ class PostCache extends BaseCache {
             return postReplies;
 
         } catch (error) {
+            log.error(error)
             throw new ServerError("Internal Server Error.");
         }
     }

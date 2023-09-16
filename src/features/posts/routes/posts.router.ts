@@ -1,6 +1,6 @@
-import signup from '@auth/controllers/signup.controller';
 import authMiddleware from '@global/middlewares/auth.middleware';
 import { CreatePostController } from '@post/controllers/create.post';
+import getPost from '@post/controllers/get.post';
 import express, { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 
@@ -12,6 +12,8 @@ class PostRoutes {
     };
 
     public routes() {
+        this.router.get('/posts/image/:page', asyncHandler(getPost.postWithImages))
+        this.router.get('/posts/:page', asyncHandler(getPost.posts));
         this.router.use(authMiddleware.verifyUser);
         this.router.use(authMiddleware.checkAuthentication);
         this.router.post('/insert', asyncHandler(CreatePostController.prototype.post));

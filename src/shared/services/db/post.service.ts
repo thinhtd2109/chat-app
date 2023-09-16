@@ -1,5 +1,5 @@
 import { ServerError } from "@global/helpers/error.handler";
-import { IPostDocument } from "@post/interfaces/post.interface";
+import { IGetPostsQuery, IPostDocument } from "@post/interfaces/post.interface";
 import { PostModel } from "@post/models/post.schema";
 import { IUserDocument } from "@user/interfaces/user.interface";
 import { UserModel } from "@user/models/user.schema";
@@ -30,6 +30,30 @@ class PostService {
             throw new ServerError('Internal Server Error.')
         }
     }
+    public async getPosts(query: IGetPostsQuery, skip = 0, limit = 0, sort: Record<string, 1 | -1>): Promise<IPostDocument[]> {
+        let postQuery = {};
+        if (query.imgId && query.gifUrl) {
+            postQuery = { $or: [{ imgId: { $ne: '' } }, { gifUrl: { $ne: '' } }] };
+        } else {
+            postQuery = query;
+        };
+
+        const posts = await PostModel.aggregate([
+            { $match: query },
+            { $sort: sort },
+            { $skip: skip },
+            { $limit: limit }
+        ]);
+
+        return posts;
+    };
+
+    public async postsCount() {
+        const count: number = await PostModel.count({});
+        return count;
+    };
+
+
 }
 
 export default new PostService();
