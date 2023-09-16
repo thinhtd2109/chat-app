@@ -13,6 +13,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import applicationRoutes from '@root/routes';
 import { CustomError, IErrorResponse } from '@global/helpers/error.handler';
 import Logger from 'bunyan';
+import { SocketIOPostHandler } from '@socket/post.socket';
 
 const log: Logger = config.createLogger('server');
 
@@ -107,7 +108,8 @@ export class ChattyServer {
     };
 
     private socketIOConnections(io: socket.Server) {
-
+        const postSocketHandler: SocketIOPostHandler = new SocketIOPostHandler(io);
+        postSocketHandler.listen();
     }
 
 }

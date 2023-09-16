@@ -38,6 +38,9 @@
       "@user/*": [
         "src/features/user/*"
       ],
+      "@post/*": [
+        "src/features/posts/*"
+      ],
       "@auth/*": [
         "src/features/auth/*"
       ],

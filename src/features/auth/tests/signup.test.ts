@@ -4,11 +4,21 @@ import { IAuthMock, authMockRequest, authMockResponse } from '@root/mocks/auth.m
 import signupController from '@auth/controllers/signup.controller';
 import { CustomError } from '@global/helpers/error.handler';
 
+jest.useFakeTimers();
 jest.mock('@service/queues/base.queue');
 jest.mock('@service/queues/auth.queue');
 jest.mock('@service/queues/user.queue');
+jest.mock('@global/helpers/cloudinary.upload')
 
 describe('Signup', () => {
+    beforeEach(() => {
+        jest.resetAllMocks();
+    });
+
+    afterEach(() => {
+        jest.clearAllTimers();
+        jest.clearAllMocks();
+    })
     it('should throw an error if user is not available', () => {
         const req = authMockRequest({}, {
             username: '',
