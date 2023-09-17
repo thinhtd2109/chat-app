@@ -25,7 +25,6 @@ export interface IReactions {
 export interface IReactionJob {
   postId: string;
   username: string;
-  previousReaction: string;
   userTo?: string;
   userFrom?: string;
   type?: string;

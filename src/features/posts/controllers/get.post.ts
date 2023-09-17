@@ -1,9 +1,9 @@
 import { IPostDocument } from '@post/interfaces/post.interface';
 import postService from '@service/db/post.service';
-import postCache from '@service/redis/post.cache';
+import PostCache from '@service/redis/post.cache';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
-
+const postCache = new PostCache();
 const PAGE_SIZE = 10;
 
 class GetPostController {

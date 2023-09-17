@@ -89,7 +89,6 @@ class UserCache extends BaseCache {
             response.social = Helpers.parseJSON(_.toString(response.social));
             response.followersCount = Helpers.parseJSON(_.toString(response.followersCount));
             response.followingCount = Helpers.parseJSON(_.toString(response.followingCount));
-            console.log(response)
             return response;
         } catch (error: any) {
             throw new BadRequestError(error);

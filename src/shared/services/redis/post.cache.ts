@@ -4,8 +4,6 @@ import { config } from "@root/config";
 import { IPostDocument, ISavePostToCache } from "@post/interfaces/post.interface";
 import _ from 'lodash';
 import { ServerError } from "@global/helpers/error.handler";
-import { Request, Response } from "express";
-import { createClient } from "redis";
 
 const log: Logger = config.createLogger('postCache');
 
@@ -218,7 +216,6 @@ class PostCache extends BaseCache {
             commentsCount,
             imgId,
             reactions } = updatedPost;
-        console.log("updatedPost", updatedPost)
         const postUpdate: string[] = [
             'post', _.toString(post),
             'profilePicture', _.toString(profilePicture),
@@ -276,4 +273,4 @@ class PostCache extends BaseCache {
 }
 
 
-export default new PostCache();
+export default PostCache;

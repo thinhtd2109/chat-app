@@ -1,12 +1,12 @@
 import { AuthorizedError, BadRequestError } from "@global/helpers/error.handler";
 import { IPostDocument } from "@post/interfaces/post.interface";
 import postQueue from "@service/queues/post.queue";
-import postCache from "@service/redis/post.cache";
+import PostCache from "@service/redis/post.cache";
 import { socketIOPostObject } from "@socket/post.socket";
 import { Request, Response } from "express";
 import HTTP_STATUS from 'http-status-codes';
 import _ from 'lodash';
-
+const postCache = new PostCache();
 class UpdatePostController {
     public async updatePost(request: Request, response: Response) {
         const { postId } = request.params;

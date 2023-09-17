@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "name": "Debug Express",
+            "program": "${workspaceFolder}/src/app.ts",
+            "request": "launch",
+            "restart": true,
+            "runtimeExecutable": "nodemon",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "preLaunchTask": "npm: build",
+            "type": "pwa-node"
+        }
+    ]
+}

@@ -3,7 +3,8 @@ import { BaseCache } from "./base.cache";
 import { config } from "@root/config";
 import _ from 'lodash';
 import { BadRequestError } from "@global/helpers/error.handler";
-import { IReactionDocument, IReactions } from "@reaction/interfaces/reaction.interface";
+import { IReactionDocument } from "@reaction/interfaces/reaction.interface";
+import { IPostDocument } from "@post/interfaces/post.interface";
 
 const log: Logger = config.createLogger('postCache');
 
@@ -12,19 +13,22 @@ class ReactionCache extends BaseCache {
         super('postCache');
     };
 
-    public async removeReactionFromCache(key: string, username: string, postReactions: IReactions) {
+    public async getHashCacheByKey(key: string) {
+        if (!this.client.isOpen) {
+            await this.client.connect();
+        };
+        return await this.client.HGETALL(key);
+    }
+
+    public async removeReactionFromCache(key: string, username: string) {
         try {
             if (!this.client.isOpen) {
                 await this.client.connect();
             };
-            const keyString = `reactions:${key}`;
-            const reactionByPost = await this.client.LRANGE(keyString, 0, -1);
-            const transaction = this.client.multi();
-            const previousReaction: IReactionDocument = this.getPreviousReaction(reactionByPost, username) as unknown as IReactionDocument;
-            transaction.LREM(`reactions:${key}`, 1, JSON.stringify(previousReaction))
 
-            const dataUpdate: string[] = ['reactions', JSON.stringify(postReactions)];
-            transaction.HSET(`posts:${key}`, dataUpdate);
+
+            const transaction = this.client.multi();
+
             await transaction.exec();
 
         } catch (error: any) {
@@ -36,41 +40,71 @@ class ReactionCache extends BaseCache {
     public async saveUserReactionToCache(
         key: string,
         reaction: IReactionDocument,
-        postReaction: IReactions,
         type: string,
-        previousReaction: string
+        userId: string
     ): Promise<void> {
         try {
             if (!this.client.isOpen) await this.client.connect();
             const transaction = this.client.multi();
-
-            if (previousReaction) {
-                this.removeReactionFromCache(key, reaction.username, postReaction);
+            const keyObject = {
+                reactionKey: `reactions:${key}`,
+                reactionUserKey: `reactions:user:${key}`,
+                postKey: `posts:${key}`,
+                stringKey: `reactions.${type}`
+            }
+            const post = await this.client.HGETALL(keyObject.postKey) as unknown as IPostDocument;
+            post.reactions = JSON.parse(_.toString(post.reactions));
+            const previousItem = await this.client.HGET(keyObject.reactionUserKey, userId) as unknown as IReactionDocument;
+            const item = _.get(post, keyObject.stringKey);
+            if (!_.isEmpty(previousItem)) {
+                if (previousItem.type == type) return;
+                this.removeReaction({
+                    reactionKey: keyObject.reactionKey,
+                    postKey: keyObject.postKey,
+                    post, previousItem,
+                    transaction,
+                    reactionUserKey: keyObject.reactionUserKey,
+                    userId
+                })
             }
 
             if (type) {
-                transaction.LPUSH(`reactions:${key}`, JSON.stringify(reaction));
-                const reactionInput = [
-                    'reactions', JSON.stringify(postReaction)
-                ];
-                transaction.HSET(`posts:${key}`, reactionInput);
-                await transaction.exec();
+                this.addReaction({
+                    post,
+                    stringKey: keyObject.stringKey,
+                    item,
+                    reaction,
+                    transaction,
+                    postKey: keyObject.postKey,
+                    reactionKey: keyObject.reactionKey,
+                    reactionUserKey: keyObject.reactionUserKey,
+                    userId
+                })
             }
-
+            await transaction.exec();
         } catch (error: any) {
             log.error(error)
             throw new BadRequestError(error);
         }
     }
+    public removeReaction({ reactionKey, postKey, post, previousItem, transaction, reactionUserKey, userId }) {
+        const previousParsed = JSON.parse(_.toString(previousItem)) as unknown as IReactionDocument;
+        post.reactions[previousParsed.type] = post.reactions[previousParsed.type] - 1;
+        const reactionInput = ['reactions', JSON.stringify(post.reactions)];
+        transaction.HSET(postKey, reactionInput);
+        transaction.LREM(reactionKey, 1, previousItem as any);
+        transaction.HDEL(reactionUserKey, userId);
+    }
 
-    private getPreviousReaction(response: string[], username: string) {
-        return _.find(response, (item: IReactionDocument) => {
-            const parseItem: IReactionDocument = JSON.parse(_.toString(item));
-            return parseItem.username == username;
-        })
+    public addReaction({ post, stringKey, item, reaction, transaction, postKey, reactionKey, reactionUserKey, userId }) {
+        _.set(post, stringKey, item + 1);
+        const reactionInput = ['reactions', JSON.stringify(post.reactions)];
+        transaction.HSET(postKey, reactionInput);
+        transaction.LPUSH(reactionKey, JSON.stringify(reaction));
+        transaction.HSET(reactionUserKey, userId, JSON.stringify(reaction));
     }
 
 }
 
 
-export default new ReactionCache();
+export default ReactionCache

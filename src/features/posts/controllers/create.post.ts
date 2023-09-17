@@ -6,11 +6,13 @@ import { Response, Request } from 'express';
 import { ObjectId } from 'mongodb';
 import moment from 'moment';
 import HTTP_STATUS from 'http-status-codes'
-import postCache from '@service/redis/post.cache';
 import _ from 'lodash';
 import { socketIOPostObject } from '@socket/post.socket';
 import postQueue from '@service/queues/post.queue';
 import { uploads } from '@global/helpers/cloudinary.upload';
+import PostCache from '@service/redis/post.cache';
+
+const postCache = new PostCache();
 
 export class CreatePostController {
     @joiValidation(postSchema)

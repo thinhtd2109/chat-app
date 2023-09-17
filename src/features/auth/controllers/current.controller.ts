@@ -9,7 +9,6 @@ const userCache: UserCache = new UserCache();
 class CurrentUserController {
     public async read(request: Request, response: Response) {
         const cached = await userCache.getUserFromCache(request.user!.userId);
-        console.log(request.user)
         const user = cached ? cached : await userService.getUserById(request.user!.userId);
         if (!user) throw new BadRequestError('Có lỗi xảy ra.');
         response.status(HTTP_STATUS.OK).send({

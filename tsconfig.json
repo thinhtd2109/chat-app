@@ -10,7 +10,7 @@
     "outDir": "./build",
     "rootDir": ".",
     "strict": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "moduleResolution": "node",

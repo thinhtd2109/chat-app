@@ -29,7 +29,7 @@ export interface IPostDocument extends Document {
   feelings?: string;
   gifUrl?: string;
   privacy?: string;
-  reactions?: IReactions;
+  reactions: IReactions;
   createdAt?: Date | string | moment.Moment;
 }
 
