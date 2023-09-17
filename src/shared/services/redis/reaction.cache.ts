@@ -37,6 +37,33 @@ class ReactionCache extends BaseCache {
         }
     }
 
+    public async getReactionsCache(postId: string): Promise<any> {
+        if (!this.client.isOpen) await this.client.connect();
+        const key = `reactions:${postId}`;
+        const results = await this.client.LRANGE(key, 0, -1) as unknown as IReactionDocument[];
+        return [results, results.length]
+    }
+
+    public async getSingleReactionUsernameFromCache(postId: string, username: string) {
+        try {
+
+            const response: string[] = await this.client.LRANGE(`reactions:${postId}`, 0, -1);
+            const list: IReactionDocument[] = [];
+            for (const item of response) {
+                const parseItem = JSON.parse(item);
+                list.push(parseItem);
+            };
+
+            const result: IReactionDocument | undefined | null = _.find(list, (item: IReactionDocument) => {
+                return item.username == username
+            });
+
+            return result ? result[0] : []
+        } catch (error) {
+            log.error(error)
+        }
+    }
+
     public async saveUserReactionToCache(
         key: string,
         reaction: IReactionDocument,
