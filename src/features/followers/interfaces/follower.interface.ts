@@ -33,10 +33,11 @@ export interface IFollowerData {
 }
 
 export interface IFollowerJobData {
-  keyOne?: string;
-  keyTwo?: string;
+  followerId: string;
+  followingId: string;
   username?: string;
-  followerDocumentId?: ObjectId;
+  transaction?: mongoose.mongo.ClientSession;
+  followerDocumentId?: string | ObjectId;
 }
 
 export interface IBlockedUserJobData {
