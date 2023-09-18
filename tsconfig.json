@@ -47,6 +47,9 @@
       "@auth/*": [
         "src/features/auth/*"
       ],
+      "@comment/*": [
+        "src/features/comments/*"
+      ],
       "@service/*": [
         "src/shared/services/*"
       ],

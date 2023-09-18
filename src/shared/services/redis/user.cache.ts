@@ -82,14 +82,18 @@ class UserCache extends BaseCache {
                 await this.client.connect();
             };
 
-            const response: IUserDocument = await this.client.HGETALL(`users:${userId}`) as unknown as IUserDocument;
+            const response: IUserDocument = await this.client.HGETALL(`user:${userId}`) as unknown as IUserDocument;
+            console.log(response)
             response.blocked = Helpers.parseJSON(_.toString(response.blocked));
             response.blockedBy = Helpers.parseJSON(_.toString(response.blockedBy));
             response.notifications = Helpers.parseJSON(_.toString(response.notifications));
             response.social = Helpers.parseJSON(_.toString(response.social));
             response.followersCount = Helpers.parseJSON(_.toString(response.followersCount));
             response.followingCount = Helpers.parseJSON(_.toString(response.followingCount));
+
+
             return response;
+
         } catch (error: any) {
             throw new BadRequestError(error);
         }
