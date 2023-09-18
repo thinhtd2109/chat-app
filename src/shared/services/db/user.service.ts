@@ -9,6 +9,9 @@ class UserService {
         const newUser = new UserModel(data);
         return await newUser.save();
     }
+    public async getUserByAuth(authId: string) {
+        return await UserModel.findOne({ authId }).lean();
+    }
     public async getUserById(userId: string) {
         const users = await UserModel.aggregate([
             {

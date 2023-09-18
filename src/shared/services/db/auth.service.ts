@@ -16,7 +16,7 @@ class AuthService {
     }
 
     public async getAuthByUsername(username: string) {
-        const user = await AuthModel.findOne(mongoose.sanitizeFilter({ username }));
+        const user = await AuthModel.findOne(mongoose.sanitizeFilter({ username })).populate('');
         return user;
     }
 

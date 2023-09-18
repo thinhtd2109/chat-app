@@ -81,7 +81,7 @@ class ReactionCache extends BaseCache {
             }
             const post = await this.client.HGETALL(keyObject.postKey) as unknown as IPostDocument;
             post.reactions = JSON.parse(_.toString(post.reactions));
-            const previousItem = await this.client.HGET(keyObject.reactionUserKey, userId) as unknown as IReactionDocument;
+            const previousItem = await this.client.HGETALL(keyObject.reactionUserKey) as unknown as IReactionDocument;
             const item = _.get(post, keyObject.stringKey);
             if (!_.isEmpty(previousItem)) {
                 if (previousItem.type == type) return;
@@ -96,6 +96,7 @@ class ReactionCache extends BaseCache {
             }
 
             if (type) {
+
                 this.addReaction({
                     post,
                     stringKey: keyObject.stringKey,
@@ -124,11 +125,23 @@ class ReactionCache extends BaseCache {
     }
 
     public addReaction({ post, stringKey, item, reaction, transaction, postKey, reactionKey, reactionUserKey, userId }) {
+        const dataToSave: string[] = [
+            '_id', _.toString(reaction._id),
+            "username", _.toString(reaction.username),
+            "avataColor", reaction.avataColor,
+            "type", reaction.type,
+            "postId", reaction.postId,
+            "profilePicture", reaction.profilePicture,
+            "createdAt", _.toString(reaction.createdAt),
+            "userTo", _.toString(reaction.userTo),
+            "comment", _.toString(reaction.comment)
+        ]
+
         _.set(post, stringKey, item + 1);
         const reactionInput = ['reactions', JSON.stringify(post.reactions)];
         transaction.HSET(postKey, reactionInput);
         transaction.LPUSH(reactionKey, JSON.stringify(reaction));
-        transaction.HSET(reactionUserKey, userId, JSON.stringify(reaction));
+        transaction.HSET(reactionUserKey, dataToSave);
     }
 
 }

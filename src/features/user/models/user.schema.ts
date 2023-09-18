@@ -1,8 +1,13 @@
 import { IUserDocument } from '@user/interfaces/user.interface';
 import mongoose, { model, Model, Schema } from 'mongoose';
+const { randomUUID } = require('crypto');
 
 const userSchema: Schema = new Schema({
   authId: { type: mongoose.Schema.Types.ObjectId, ref: 'Auth', index: true },
+  uniqueId: {
+    type: 'UUID',
+    default: () => randomUUID()
+  },
   profilePicture: { type: String, default: '' },
   postsCount: { type: Number, default: 0 },
   followersCount: { type: Number, default: 0 },

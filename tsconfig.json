@@ -47,6 +47,9 @@
       "@auth/*": [
         "src/features/auth/*"
       ],
+      "@follower/*": [
+        "src/features/followers/*"
+      ],
       "@comment/*": [
         "src/features/comments/*"
       ],
